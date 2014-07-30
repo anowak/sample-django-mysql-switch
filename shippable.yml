@@ -1,0 +1,18 @@
+language: python
+
+python:
+  - 2.7
+
+install:
+  - pip install -r requirements.txt
+
+before_script: 
+  - mkdir -p shippable/testresults
+  - mkdir -p shippable/codecoverage
+  # fill the production db with some data
+  - mysql -e 'create database prod'
+  - yes 'no' | python manage.py syncdb
+  - mysql prod -e 'INSERT IGNORE INTO django_mysql_score (id, score, timestamp) VALUES (1, 1234, NOW())'
+
+script:
+  - python manage.py test
